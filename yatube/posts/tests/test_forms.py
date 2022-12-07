@@ -207,5 +207,3 @@ class CommentFormsTest(TestCase):
             follow=True,
         )
         self.assertEqual(self.post.comments.count(), comments_count)
-
-
