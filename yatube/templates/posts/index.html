@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load cache %}
+{% load user_filters %}
+{% block title %}Yatube - социальная сеть{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Последние изменения на сайте</h1>
+        {% cache 20 index_page with page_obj %}
+        {% include 'posts/includes/switcher.html' %}
+        {% for post in page_obj %}
+            {% include 'posts/includes/post_card.html' %}
+        {% endfor %}
+        {% include 'posts/includes/paginator.html' %}
+        {% endcache %}
+    </div>
+{% endblock %}
