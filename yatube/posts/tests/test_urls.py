@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
- 
+
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.test import Client, TestCase
@@ -62,7 +62,7 @@ class PostURLTests(TestCase):
         """Проверка доступности адресов страниц для гостя."""
         rederict_urls = (
             'posts:post_create',
-            'posts:post_edit', 
+            'posts:post_edit',
             'posts:add_comment',
             'posts:follow_index',
             'posts:profile_follow',

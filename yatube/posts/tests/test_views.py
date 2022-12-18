@@ -197,6 +197,7 @@ class PaginatorTests(TestCase):
                             nums
                         )
 
+
 class FollowerTests(TestCase):
     @classmethod
     def setUpClass(cls):

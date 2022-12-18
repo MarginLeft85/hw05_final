@@ -35,6 +35,7 @@ class FollowAdmin(admin.ModelAdmin):
         'author',
     )
 
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Comment, CommentAdmin)
