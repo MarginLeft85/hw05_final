@@ -23,6 +23,7 @@ class PostURLTests(TestCase):
         cls.post = Post.objects.create(
             author=cls.author,
             text='Тестовый пост Тестовый пост Тестовый пост',
+            group=cls.group,
         )
         cls.urls = (
             ('posts:group_list', (cls.group.slug,),
@@ -37,12 +38,12 @@ class PostURLTests(TestCase):
             ('posts:post_edit', (cls.post.pk,),
                 f'/posts/{cls.post.pk}/edit/'),
             ('posts:add_comment', (cls.post.pk,),
-             f'/posts/{cls.post.pk}/comment/'),
+                f'/posts/{cls.post.pk}/comment/'),
             ('posts:follow_index', None, '/follow/'),
             ('posts:profile_follow', (cls.author,),
-             f'/profile/{cls.author}/follow/'),
+                f'/profile/{cls.author}/follow/'),
             ('posts:profile_unfollow', (cls.author,),
-             f'/profile/{cls.author}/unfollow/'),
+                f'/profile/{cls.author}/unfollow/'),
         )
 
     def setUp(self):
