@@ -25,8 +25,6 @@ class PostURLTests(TestCase):
             text='Тестовый пост Тестовый пост Тестовый пост',
         )
         cls.urls = (
-            ('posts:group_list', (cls.group.slug,),
-                f'/group/{cls.group.slug}/'),
             ('posts:index', None, '/',),
             ('posts:profile', (cls.author.username,),
                 f'/profile/{cls.author.username}/'),

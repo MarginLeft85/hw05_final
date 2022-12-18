@@ -41,7 +41,6 @@ class PostTests(TestCase):
         cls.urls = (
             ('posts:index', None, 'posts/index.html'),
             ('posts:profile', (cls.user,), 'posts/profile.html'),
-            ('posts:group_list', (cls.group.slug,), 'posts/group_list.html'),
             ('posts:post_detail', (cls.post.id,), 'posts/post_detail.html'),
             ('posts:post_create', None, 'posts/create_post.html'),
             ('posts:post_edit', (cls.post.id,), 'posts/create_post.html'),
