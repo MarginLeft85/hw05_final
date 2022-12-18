@@ -114,29 +114,26 @@ def follow_index(request):
     posts = Post.objects.select_related('author').filter(
         author__following__user=request.user
     )
-    context = {"page_obj": get_page_context(request, posts)}
+    context = {'page_obj': get_page_context(request, posts)}
     return render(request, 'posts/follow.html', context)
 
 
 @login_required
 def profile_follow(request, username):
-    author = get_object_or_404(User, username=username)
-    follower_list = Follow.objects.filter(user=request.user, author=author)
-
-    if follower_list.exists() or request.user == author:
-        return redirect("posts:index")
-    Follow.objects.create(user=request.user, author=author)
-    return redirect("posts:profile", username=username)
+    if username != request.user.username:
+        author = get_object_or_404(User, username=username)
+        Follow.objects.get_or_create(
+            user=request.user,
+            author=author,
+        )
+    return redirect('posts:profile', username)
 
 
 @login_required
 def profile_unfollow(request, username):
-    author = get_object_or_404(User, username=username)
-
-    following_list = Follow.objects.filter(user=request.user, author=author)
-
-    if not following_list.exists():
-        redirect("posts:index")
-
-    following_list.delete()
-    return redirect("posts:profile", username=username)
+    follower = get_object_or_404(
+        Follow,
+        user=request.user,
+        author__username=username)
+    follower.delete()
+    return redirect('posts:profile', username)

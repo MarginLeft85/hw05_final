@@ -6,10 +6,11 @@
 {% block content %}
     <div class="container">
         <h1>Последние изменения на сайте</h1>
+        {% include 'posts/includes/switcher.html' with index=True %}
         {% cache 20 index_page with page_obj %}
-        {% include 'posts/includes/switcher.html' %}
         {% for post in page_obj %}
             {% include 'posts/includes/post_card.html' %}
+            {% if not forloop.last %}<hr>{% endif %}
         {% endfor %}
         {% include 'posts/includes/paginator.html' %}
         {% endcache %}

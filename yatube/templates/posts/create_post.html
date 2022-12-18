@@ -1,11 +1,7 @@
 {% extends 'base.html' %}
 {% load thumbnail %}
 {% block title %}
-    {% if form.instance.pk %}
-        Редактировать пост
-    {% else %}
-        Новый пост
-    {% endif %}
+    {% if form.instance.pk %}Редактировать пост{% else %}Новый пост{% endif %}
 {% endblock %}
 {% block content %}
     <div class="container py-5">
@@ -13,11 +9,7 @@
             <div class="col-md-8 p-5">
                 <div class="card">
                     <div class="card-header">
-                        {% if form.instance.pk %}
-                            Редактировать пост
-                        {% else %}
-                            Новый пост
-                        {% endif %}
+                        {% if form.instance.pk %}Редактировать пост{% else %}Новый пост{% endif %}
                     </div>
                     <div class="card-body">
                         {% include 'includes/errors.html' %}
@@ -30,11 +22,7 @@
                         {% include 'includes/forms.html' %}
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">
-                                 {% if form.instance.pk %}
-                                    Редактировать пост
-                                {% else %}
-                                    Новый пост
-                                {% endif %}
+                                {% if form.instance.pk %}Редактировать пост{% else %}Новый пост{% endif %}
                             </button>
                         </div>
                     </form>

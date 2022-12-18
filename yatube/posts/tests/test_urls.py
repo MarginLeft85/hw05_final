@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+ 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.test import Client, TestCase
@@ -23,7 +24,6 @@ class PostURLTests(TestCase):
             author=cls.author,
             text='Тестовый пост Тестовый пост Тестовый пост',
         )
-
         cls.urls = (
             ('posts:group_list', (cls.group.slug,),
                 f'/group/{cls.group.slug}/'),
@@ -36,7 +36,13 @@ class PostURLTests(TestCase):
                 f'/posts/{cls.post.pk}/'),
             ('posts:post_edit', (cls.post.pk,),
                 f'/posts/{cls.post.pk}/edit/'),
-            ('posts:post_create', None, '/create/')
+            ('posts:add_comment', (cls.post.pk,),
+             f'/posts/{cls.post.pk}/comment/'),
+            ('posts:follow_index', None, '/follow/'),
+            ('posts:profile_follow', (cls.author,),
+             f'/profile/{cls.author}/follow/'),
+            ('posts:profile_unfollow', (cls.author,),
+             f'/profile/{cls.author}/unfollow/'),
         )
 
     def setUp(self):
@@ -56,7 +62,11 @@ class PostURLTests(TestCase):
         """Проверка доступности адресов страниц для гостя."""
         rederict_urls = (
             'posts:post_create',
-            'posts:post_edit',
+            'posts:post_edit', 
+            'posts:add_comment',
+            'posts:follow_index',
+            'posts:profile_follow',
+            'posts:profile_unfollow',
         )
         for url, args, _, in self.urls:
             reverse_name = reverse(url, args=args)
@@ -89,23 +99,53 @@ class PostURLTests(TestCase):
 
     def test_urls_exists_at_desired_location_for_author(self):
         """Проверка доступности адресов страниц для автора."""
-        for url, args, _, in self.urls:
-            reverse_name = reverse(url, args=args)
-            with self.subTest(reverse_name=reverse_name):
-                response = self.authorized_client.get(reverse_name)
-                self.assertEqual(response.status_code, HTTPStatus.OK)
+        for name, arg, url in self.urls:
+            with self.subTest(name=name, arg=arg):
+                response = self.authorized_client.get(reverse(name, args=arg))
+                if name == 'posts:add_comment':
+                    self.assertRedirects(
+                        response,
+                        reverse('posts:post_detail', args=(self.post.pk,))
+                    )
+                elif name == 'posts:profile_follow':
+                    self.assertRedirects(
+                        response,
+                        reverse('posts:profile', args=(self.author,))
+                    )
+                elif name == 'posts:profile_unfollow':
+                    self.assertEqual(
+                        response.status_code,
+                        HTTPStatus.NOT_FOUND
+                    )
+                else:
+                    self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_no_authorized_user(self):
         """Проверка ссылок авторизованному пользователю - не автору поста."""
+        redirect_names_posts = [
+            'posts:post_edit',
+            'posts:add_comment'
+        ]
+        redirect_names_profile = [
+            'posts:profile_follow',
+            'posts:profile_unfollow'
+        ]
         for url, args, _, in self.urls:
             reverse_name = reverse(url, args=args)
+            response = self.auth_no_author.get(reverse_name)
             with self.subTest():
                 if reverse_name == reverse(
                         'posts:post_edit',
                         kwargs={'post_id': self.post.id},
                 ):
-                    response = self.auth_no_author.get(reverse_name)
                     self.assertEqual(response.status_code, HTTPStatus.FOUND)
-                else:
-                    response = self.auth_no_author.get(reverse_name)
-                    self.assertEqual(response.status_code, HTTPStatus.OK)
+                elif reverse_name in redirect_names_posts:
+                    self.assertRedirects(
+                        response,
+                        reverse('posts:post_detail', args=(self.post.pk,))
+                    )
+                elif reverse_name in redirect_names_profile:
+                    self.assertRedirects(
+                        response,
+                        reverse('posts:profile', args=(self.author,))
+                    )

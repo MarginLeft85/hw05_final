@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}Посты авторов{% endblock %}
 {% block content %}
-{% load user_filters %}
 {% load cache %}
-  {% include 'posts/includes/switcher.html' %}
-  {% for post in page_obj %}  
-    {% if post.group %}   
-      <a href="{% url 'posts:group_list' post.group.slug %}">
-        все записи группы
-      </a>
-    {% endif %}
+<div class="container py-5">
+  {% include 'posts/includes/switcher.html' with follow=True %}
+  {% for post in page_obj %}    
+    <a href="{% url 'posts:group_list' post.group.slug %}">
+      все записи группы
+    </a>
     {% if not forloop.last %}<hr>{% endif %}
   {% endfor %}
   {% include 'posts/includes/paginator.html' %}
+</div>
 {% endblock %}

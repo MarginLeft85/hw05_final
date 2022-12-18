@@ -1,11 +1,12 @@
 from django import forms
 
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 
 from ..forms import PostForm
-from posts.models import Group, Post, User
+from posts.models import Follow, Group, Post, User
 
 
 class PostTests(TestCase):
@@ -44,6 +45,7 @@ class PostTests(TestCase):
             ('posts:post_detail', (cls.post.id,), 'posts/post_detail.html'),
             ('posts:post_create', None, 'posts/create_post.html'),
             ('posts:post_edit', (cls.post.id,), 'posts/create_post.html'),
+            ('posts:follow_index', None, 'posts/follow.html'),
         )
 
     def setUp(self):
@@ -145,6 +147,7 @@ class PaginatorTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.follower = User.objects.create_user(username='follower')
         cls.user = User.objects.create_user(username='Author')
         cls.group = Group.objects.create(
             title='Тестовая группа',
@@ -155,6 +158,14 @@ class PaginatorTests(TestCase):
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
+        self.authorized_follower = Client()
+        self.authorized_follower.force_login(self.follower)
+        self.authorized_follower.get(
+            reverse(
+                'posts:profile_follow',
+                args=(self.user,)
+            )
+        )
 
     def test_paginator(self):
         RANGE: int = 13
@@ -172,15 +183,89 @@ class PaginatorTests(TestCase):
             ('posts:index', None),
             ('posts:group_list', (self.group.slug,)),
             ('posts:profile', (self.user.username,)),
+            ('posts:follow_index', None),
         )
         for address, args in paginator_urls:
             with self.subTest(address=address):
                 for page, nums in posturls_posts_page:
                     with self.subTest(page=page):
-                        response = self.authorized_client.get(
+                        response = self.authorized_follower.get(
                             reverse(address, args=args) + page
                         )
                         self.assertEqual(
                             len(response.context['page_obj']),
                             nums
                         )
+
+class FollowerTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.follower = User.objects.create_user(username='follower')
+        cls.following = User.objects.create_user(username='following')
+        cls.post = Post.objects.create(
+            author=cls.following,
+            text='Тест подписок',
+        )
+
+    def setUp(self):
+        self.authorized_follower = Client()
+        self.authorized_follower.force_login(self.follower)
+        self.authorized_following = Client()
+        self.authorized_following.force_login(self.following)
+
+    def test_follow(self):
+        """Проверка работы подписки"""
+        count = Follow.objects.count()
+        self.authorized_follower.get(
+            reverse(
+                'posts:profile_follow',
+                args=(self.following,)
+            )
+        )
+        count_2 = Follow.objects.count()
+        self.assertEqual(count_2, count + 1)
+        follow = Follow.objects.first()
+        self.assertEqual(follow.author, self.post.author)
+        self.assertEqual(follow.user, self.follower)
+
+    def test_unfollow(self):
+        """Проверка работы отписки"""
+        Follow.objects.create(
+            author=self.following,
+            user=self.follower,
+        )
+        count = Follow.objects.count()
+        self.authorized_follower.get(
+            reverse(
+                'posts:profile_unfollow',
+                args=(self.following,)
+            )
+        )
+        count_2 = Follow.objects.count()
+        self.assertEqual(count_2, count - 1)
+
+    def test_follow_self(self):
+        """Нельзя подписаться на самого себя"""
+        count = Follow.objects.count()
+        self.authorized_following.get(
+            reverse(
+                'posts:profile_unfollow',
+                args=(self.following,)
+            )
+        )
+        self.assertEqual(count, count)
+
+    def test_second_time_follow_impossible(self):
+        """Нельзя подписаться на автора второй раз"""
+        count = Follow.objects.count()
+        follow = self.authorized_follower.get(
+            reverse(
+                'posts:profile_follow',
+                args=(self.following,)
+            )
+        )
+        for _ in range(settings.FOLLOW_NUMS):
+            follow
+        count_2 = Follow.objects.count()
+        self.assertEqual(count_2, count + 1)
