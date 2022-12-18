@@ -62,7 +62,6 @@ class PostURLTests(TestCase):
         """Проверка доступности адресов страниц для гостя."""
         rederict_urls = (
             'posts:post_create',
-            
             'posts:post_edit',
             'posts:add_comment',
             'posts:follow_index',
