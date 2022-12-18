@@ -23,14 +23,11 @@ class PostURLTests(TestCase):
         cls.post = Post.objects.create(
             author=cls.author,
             text='Тестовый пост Тестовый пост Тестовый пост',
-            group=cls.group,
         )
         cls.urls = (
             ('posts:group_list', (cls.group.slug,),
                 f'/group/{cls.group.slug}/'),
             ('posts:index', None, '/',),
-            ('posts:group_list', (cls.group.slug,),
-                f'/group/{cls.group.slug}/'),
             ('posts:profile', (cls.author.username,),
                 f'/profile/{cls.author.username}/'),
             ('posts:post_detail', (cls.post.pk,),
