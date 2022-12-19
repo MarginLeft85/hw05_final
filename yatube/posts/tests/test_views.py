@@ -218,7 +218,7 @@ class FollowerTests(TestCase):
     def test_follow(self):
         """Проверка работы подписки"""
         count = Follow.objects.count()
-        self.authorized_follower.get(
+        self.authorized_follower.post(
             reverse(
                 'posts:profile_follow',
                 args=(self.following,)
@@ -237,7 +237,7 @@ class FollowerTests(TestCase):
             user=self.follower,
         )
         count = Follow.objects.count()
-        self.authorized_follower.get(
+        self.authorized_follower.post(
             reverse(
                 'posts:profile_unfollow',
                 args=(self.following,)
@@ -249,9 +249,9 @@ class FollowerTests(TestCase):
     def test_follow_self(self):
         """Нельзя подписаться на самого себя"""
         count = Follow.objects.count()
-        self.authorized_following.get(
+        self.authorized_following.post(
             reverse(
-                'posts:profile_unfollow',
+                'posts:profile_follow',
                 args=(self.following,)
             )
         )
@@ -260,7 +260,7 @@ class FollowerTests(TestCase):
     def test_second_time_follow_impossible(self):
         """Нельзя подписаться на автора второй раз"""
         count = Follow.objects.count()
-        follow = self.authorized_follower.get(
+        follow = self.authorized_follower.post(
             reverse(
                 'posts:profile_follow',
                 args=(self.following,)

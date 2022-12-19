@@ -42,15 +42,15 @@ class Post(models.Model):
                                     verbose_name='Дата поста')
     group = models.ForeignKey(
         Group,
-        verbose_name="Сообщество",
-        help_text="Введите название для группы",
+        verbose_name='Сообщество',
+        help_text='Введите название для группы',
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
         related_name='posts')
     author = models.ForeignKey(
         User,
-        verbose_name="Автор поста",
+        verbose_name='Автор поста',
         help_text='Изменить авторство',
         on_delete=models.CASCADE,
         related_name='posts')
@@ -72,10 +72,10 @@ class Comment(models.Model):
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        related_name="comments",
+        related_name='comments',
         blank=True,
         null=True,
-        verbose_name="Пост"
+        verbose_name='Пост'
     )
     author = models.ForeignKey(
         User,
@@ -83,12 +83,12 @@ class Comment(models.Model):
         related_name='comments',
         blank=True,
         null=True,
-        verbose_name="Автор комментария"
+        verbose_name='Автор комментария'
     )
-    text = models.TextField("Текст комментария")
+    text = models.TextField('Текст комментария')
     created = models.DateTimeField(
         auto_now_add=True,
-        verbose_name="Время публикации"
+        verbose_name='Время публикации'
     )
 
     class Meta:
@@ -119,7 +119,7 @@ class Follow(models.Model):
         verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "author"], name="unique_follow"
+                fields=['user', 'author'], name='unique_follow'
             ),
         ]
 

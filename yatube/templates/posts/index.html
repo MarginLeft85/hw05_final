@@ -12,7 +12,7 @@
             {% include 'posts/includes/post_card.html' %}
             {% if not forloop.last %}<hr>{% endif %}
         {% endfor %}
-        {% include 'posts/includes/paginator.html' %}
         {% endcache %}
+        {% include 'posts/includes/paginator.html' %}  
     </div>
 {% endblock %}
