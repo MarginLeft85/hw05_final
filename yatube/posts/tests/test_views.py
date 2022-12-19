@@ -183,7 +183,7 @@ class PaginatorTests(TestCase):
             ('posts:index', None),
             ('posts:group_list', (self.group.slug,)),
             ('posts:profile', (self.user.username,)),
-            ('posts:follow_index', None,),
+            ('posts:follow_index', None),
         )
         for address, args in paginator_urls:
             with self.subTest(address=address):

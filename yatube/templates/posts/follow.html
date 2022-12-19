@@ -3,11 +3,10 @@
 {% block content %}
 {% load cache %}
 <div class="container py-5">
+  <h1>Посты авторов, на которые Вы подписаны</h1>
   {% include 'posts/includes/switcher.html' with follow=True %}
-  {% for post in page_obj %}    
-    <a href="{% url 'posts:group_list' post.group.slug %}">
-      все записи группы
-    </a>
+  {% for post in page_obj %}
+  {% include 'posts/includes/post_card.html' with follow=True %}
     {% if not forloop.last %}<hr>{% endif %}
   {% endfor %}
   {% include 'posts/includes/paginator.html' %}

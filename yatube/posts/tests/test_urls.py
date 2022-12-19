@@ -97,7 +97,7 @@ class PostURLTests(TestCase):
 
     def test_urls_exists_at_desired_location_for_author(self):
         """Проверка доступности адресов страниц для автора."""
-        for name, arg, url in self.urls:
+        for name, arg, _ in self.urls:
             with self.subTest(name=name, arg=arg):
                 response = self.authorized_client.get(reverse(name, args=arg))
                 if name == 'posts:add_comment':
